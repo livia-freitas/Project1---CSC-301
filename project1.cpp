@@ -23,10 +23,34 @@ void selectionSort(vector<double> &arrayToSort) {
 
 /*
  * insertionSort
+ * 
+ * This function sorts the input vector using the insertion sort algorithm.
+ * It starts by iterating through the vector, placing each element in its 
+ * correct position relative to the already sorted section.
+ *
+ * @param arrayToSort - The vector of doubles to be sorted in ascending order.
+ * @return void - The function modifies the vector in place.
  */
 void insertionSort(vector<double> &arrayToSort) {
-    return;
+    int n = arrayToSort.size(); // initialize
+
+    // Iterate through the array starting from the second element.
+    for (int i = 1; i < n; i++) {
+        double key = arrayToSort[i]; // The current element to be inserted.
+        int m = i - 1;
+
+        // Shift elements of the sorted portion of the array to the right
+        // until the correct position for the key is found.
+        while (m >= 0 && arrayToSort[m] > key) {
+            arrayToSort[m + 1] = arrayToSort[m];
+            m--; // Move to the previous element.
+        }
+
+        // Insert the key at the correct position.
+        arrayToSort[m + 1] = key;
+    }
 }
+
 
 /*
  * bubbleSort
