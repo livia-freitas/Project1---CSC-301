@@ -20,41 +20,28 @@ using namespace std;
 
 /*
  * selectionSort
+ *
+ * Implements the Selection Sort algorithm.
+ * It repeatedly finds the minimum element and moves it to the sorted part.
+ *
+ * in: arrayToSort - vector of doubles.
+ * out: nothing (array is sorted in place).
  */
 void selectionSort(vector<double> &arrayToSort) {
+    int n = arrayToSort.size();
+    for (int i = 0; i < n - 1; i++) { // Iterate through array
+        int minIndex = i;
+        for (int j = i + 1; j < n; j++) { // Find min element
+            if (arrayToSort[j] < arrayToSort[minIndex]) {
+                minIndex = j;
+            }
+        }
+        swap(arrayToSort[i], arrayToSort[minIndex]); // Swap min with first unsorted
+    }
     return;
 }
 
 /*
-<<<<<<< Updated upstream
- * insertionSort
- * 
- * This function sorts the input vector using the insertion sort algorithm.
- * It starts by iterating through the vector, placing each element in its 
- * correct position relative to the already sorted section.
- *
- * @param arrayToSort - The vector of doubles to be sorted in ascending order.
- * @return void - The function modifies the vector in place.
- */
-void insertionSort(vector<double> &arrayToSort) {
-    int n = arrayToSort.size(); // initialize
-
-    // Iterate through the array starting from the second element.
-    for (int i = 1; i < n; i++) {
-        double key = arrayToSort[i]; // The current element to be inserted.
-        int m = i - 1;
-
-        // Shift elements of the sorted portion of the array to the right
-        // until the correct position for the key is found.
-        while (m >= 0 && arrayToSort[m] > key) {
-            arrayToSort[m + 1] = arrayToSort[m];
-            m--; // Move to the previous element.
-        }
-
-        // Insert the key at the correct position.
-        arrayToSort[m + 1] = key;
-    }
-=======
  * insertionSort 
  *
  * insertionSort sorts an array by separating the array into a sorted
@@ -77,7 +64,6 @@ void insertionSort(vector<double> &arrayToSort) {
         arrayToSort[i + 1] = rabbit; //put rabbit in correct position
     }
     return;
->>>>>>> Stashed changes
 }
 
 
@@ -113,27 +99,124 @@ void bubbleSort(vector<double> &arrayToSort) {
 }
 
 /*
- * mergeSort
+ * merge
+ *
+ * Merges two sorted subarrays into one sorted array.
+ *
+ * in: arrayToSort - vector of doubles.
+ *     left - starting index of left subarray.
+ *     mid - ending index of left subarray.
+ *     right - ending index of right subarray.
+ * out: nothing (array is merged in place).
  */
-void mergeSort(vector<double> &arrayToSort) {
-    return;
+void merge(vector<double> &arrayToSort, int left, int mid, int right) {
+    int leftSize = mid - left + 1;
+    int rightSize = right - mid;
+    vector<double> leftArr(leftSize);
+    vector<double> rightArr(rightSize);
+    
+    // Copy data to temp arrays
+    for (int i = 0; i < leftSize; i++) leftArr[i] = arrayToSort[left + i];
+    for (int j = 0; j < rightSize; j++) rightArr[j] = arrayToSort[mid + 1 + j];
+    
+    int i = 0, j = 0, k = left;
+    
+    // Merge back to original array
+    while (i < leftSize && j < rightSize) {
+        if (leftArr[i] <= rightArr[j]) {
+            arrayToSort[k++] = leftArr[i++];
+        } else {
+            arrayToSort[k++] = rightArr[j++];
+        }
+    }
+    
+    // Copy remaining elements if any
+    while (i < leftSize) arrayToSort[k++] = leftArr[i++];
+    while (j < rightSize) arrayToSort[k++] = rightArr[j++];
 }
 
 /*
+ * mergeSortHelper
+ *
+ * Recursively sorts an array using Merge Sort.
+ *
+ * in: arrayToSort - vector of doubles.
+ *     left - starting index of subarray.
+ *     right - ending index of subarray.
+ * out: nothing (array is sorted in place).
+ */
+void mergeSortHelper(vector<double> &arrayToSort, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2; // Avoids overflow
+        mergeSortHelper(arrayToSort, left, mid);
+        mergeSortHelper(arrayToSort, mid + 1, right);
+        merge(arrayToSort, left, mid, right);
+    }
+}
+
+/*
+ * mergeSort
+ *
+ * Sorts an array using Merge Sort.
+ *
+ * in: arrayToSort - vector of doubles.
+ * out: nothing (array is sorted in place).
+ */
+void mergeSort(vector<double> &arrayToSort) {
+    mergeSortHelper(arrayToSort, 0, arrayToSort.size() - 1);
+}
+
+
+/*
+ * partition
+ *
+ * Partitions the array for Quick Sort.
+ *
+ * in: arrayToSort - vector of doubles.
+ *     low - starting index.
+ *     high - ending index.
+ * out: partition index.
+ */
+int partition(vector<double> &arrayToSort, int low, int high) {
+    double pivot = arrayToSort[high]; // Pivot element
+    int i = low - 1;
+    for (int j = low; j < high; j++) {
+        if (arrayToSort[j] <= pivot) { // Swap if element is smaller than pivot
+            swap(arrayToSort[++i], arrayToSort[j]);
+        }
+    }
+    swap(arrayToSort[i + 1], arrayToSort[high]);
+    return i + 1;
+}
+
+
+
+/*
  * quickSortHelper
- * 
- * Note that i is inclusive (i.e., is the first element of subarray).
- * Note that j is not inclusive (i.e., off the end of the subarray).
- * 
+ *
+ * Recursively sorts an array using Quick Sort.
+ *
+ * in: arrayToSort - vector of doubles.
+ *     i - starting index (inclusive).
+ *     j - ending index (exclusive).
+ * out: nothing (array is sorted in place).
  */
 void quickSortHelper(vector<double> &arrayToSort, int i, int j) {
-    return;
+    if (i < j - 1) { // Ensures at least 2 elements in range
+        int pivotIndex = partition(arrayToSort, i, j - 1);
+        quickSortHelper(arrayToSort, i, pivotIndex); // Sort left partition
+        quickSortHelper(arrayToSort, pivotIndex + 1, j); // Sort right partition
+    }
 }
 
 /*
  * quickSort
+ *
+ * Sorts an array using Quick Sort.
+ *
+ * in: arrayToSort - vector of doubles.
+ * out: nothing (array is sorted in place).
  */
 void quickSort(vector<double> &arrayToSort) {
     quickSortHelper(arrayToSort, 0, arrayToSort.size());
-    return;
 }
